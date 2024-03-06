@@ -1,0 +1,3 @@
+[submodule "ElectricityPricePrediction_CarterEx"]
+	path = ElectricityPricePrediction_CarterEx
+	url = https://github.com/Carterbouley/ElectricityPricePrediction.git
