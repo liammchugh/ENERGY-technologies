@@ -1,3 +1,6 @@
 [submodule "ElectricityPricePrediction_CarterEx"]
 	path = ElectricityPricePrediction_CarterEx
 	url = https://github.com/Carterbouley/ElectricityPricePrediction.git
+[submodule "RESERVE-Public"]
+	path = RESERVE-Public
+	url = https://github.com/e3-/RESERVE-Public.git
