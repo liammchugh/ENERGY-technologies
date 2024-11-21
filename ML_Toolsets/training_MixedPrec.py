@@ -16,7 +16,7 @@ global architecture_analysis
 architecture_analysis = False
 global device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # if multiple GPUs, use cuda:0, cuda:1, etc.
-
+torch.cuda.empty_cache()
 
 def count_parameters(model: torch.nn.Module) -> int:
     # https://discuss.pytorch.org/t/how-do-i-check-the-number-of-parameters-of-a-model/4325/9
@@ -201,7 +201,8 @@ def Xfrmr_train(model, criterion, optimizer, scheduler, train_dataloader, val_da
             with autocast(device_type='cuda', dtype=torch.float16):
                 output = model(src_batch, tgt_batch, src_mask, tgt_mask)
                 loss = criterion(output, tgt_batch)
-            loss.backward()
+            scaler = GradScaler(init_scale=32768.0)
+            scaler.scale(loss).backward()
             print(f'steploss: {loss.item(): .7f}')
             optimizer.step()
             loaderloss += loss.item()

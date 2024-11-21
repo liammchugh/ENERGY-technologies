@@ -283,22 +283,6 @@ def count_parameters(model: torch.nn.Module) -> int:
     """ Returns the number of learnable parameters for a PyTorch model """
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-## Padding and Masking - Training Data Prep ##
-def pad_sequences(sequences, max_length):
-    padded_sequences = torch.zeros(len(sequences), max_length, sequences[0].size(1))
-    for i, seq in enumerate(sequences):
-        length = seq.size(0)
-        padded_sequences[i, -length:] = seq
-    return padded_sequences
-
-def generate_masks(src, tgt):
-    src_mask = (src.sum(dim=-1) != 0).unsqueeze(1).unsqueeze(2)
-    tgt_mask = (tgt.sum(dim=-1) != 0).unsqueeze(1).unsqueeze(2)
-    seq_len = tgt.size(1)
-    nopeak_mask = (1 - torch.triu(torch.ones((1, seq_len, seq_len), device=tgt.device), diagonal=1)).bool()
-    tgt_mask = tgt_mask & nopeak_mask
-    return src_mask, tgt_mask
-
 # Custom Dataset to handle varying-length sequences
 class TimeSeriesDataset(data.Dataset):
     def __init__(self, data, target):

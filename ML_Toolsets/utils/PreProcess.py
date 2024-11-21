@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import random
+import torch
 
 def GrabData(filepath, db='training', weather_path=None, data_path=None, input_path=None):
     '''
@@ -115,6 +116,23 @@ def process_lists(sample_df_list, target_df_list, zero_indices, max_context, fil
     print(f"Useable Samples: {len(X_list)}")
 
     return X_list, X_list_og, y_list
+
+
+## Padding and Masking - Training Data Prep ##
+def pad_sequences(sequences, max_length):
+    padded_sequences = torch.zeros(len(sequences), max_length, sequences[0].size(1))
+    for i, seq in enumerate(sequences):
+        length = seq.size(0)
+        padded_sequences[i, -length:] = seq
+    return padded_sequences
+
+def generate_masks(src, tgt):
+    src_mask = (src.sum(dim=-1) != 0).unsqueeze(1).unsqueeze(2)
+    tgt_mask = (tgt.sum(dim=-1) != 0).unsqueeze(1).unsqueeze(2)
+    seq_len = tgt.size(1)
+    nopeak_mask = (1 - torch.triu(torch.ones((1, seq_len, seq_len), device=tgt.device), diagonal=1)).bool()
+    tgt_mask = tgt_mask & nopeak_mask
+    return src_mask, tgt_mask
 
 def plot_data(data, features, indices, data2=None, title='Random Sample'):
     import matplotlib.pyplot as plt

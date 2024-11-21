@@ -58,7 +58,7 @@ class EarlyStopping:
 def predict(model, src_batch, max_seq_length, device='cpu', start_token=None):
     model.eval()
     src_batch = src_batch.to(device)
-    src_mask, _ = generate_masks(src_batch, src_batch)
+    src_mask, _ = prep.generate_masks(src_batch, src_batch)
     src_mask = src_mask.to(device)
     batch_size = src_batch.size(0)
     tgt_dim = model.fc_out.out_features
@@ -105,7 +105,7 @@ def fitness_func(ga_instance, solution, sol_idx):
     loaderloss = 0.0
     for src_batch, tgt_batch in train_dataloader:
         src_batch, tgt_batch = src_batch.to(device), tgt_batch.to(device)
-        src_mask, tgt_mask = generate_masks(src_batch, tgt_batch)
+        src_mask, tgt_mask = prep.generate_masks(src_batch, tgt_batch)
         src_mask, tgt_mask = src_mask.to(device), tgt_mask.to(device)
         output = model(src_batch, tgt_batch, src_mask, tgt_mask)
         criterion = RMSELoss()
@@ -233,7 +233,7 @@ if __name__ == "__main__":
     import json, joblib
     import datetime as dt
     from sklearn.preprocessing import StandardScaler
-    import utils.data_process as prep
+    import utils.PreProcess as prep
     from utils.optimization import RMSELoss, MAELoss, MAPELoss, WarmupScheduler
     from analysis import evaluate_ml as evaluate
 
